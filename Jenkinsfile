@@ -1,5 +1,5 @@
 pipeline { //لازم يبدأ بـكلمة دي
-    agent any // هترن كل الخطوات الجاية في الحتة الفلانية
+    agent { label 'iti-smart-slave-paa' }
                 //any: اي حد فاضي اي حد متاح رن عليه السكريبت
     stages {
         stage('test') { // يكون بنفس الاسم عادي stage ينفع
