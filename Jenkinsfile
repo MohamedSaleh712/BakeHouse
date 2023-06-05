@@ -1,11 +1,12 @@
 pipeline {
-    agent { label 'iti-smart' }
+    agent none
     // parameters {
     //     choice(name: 'ENV', choices: ['dev', 'test', 'prod',"release"])
-    // } 
+    // }
     stages {
         stage('build') {
             steps {
+                agent { label 'slave-release-label' }
                 echo 'build'
                 script{
                     if (BRANCH_NAME == "release") {
@@ -25,6 +26,19 @@ pipeline {
             }
         }
         stage('deploy') {
+            label {
+                switch (BRANCH_NAME) {
+                    case 'dev':
+                        return 'slave-dev-label'
+                    case 'test':
+                        return 'slave-test-label'
+                    case 'prod':
+                        return 'slave-prod-label'
+                    default:
+                        return 'slave-release-label'
+                }
+            }
+        }
             steps {
                 echo 'deploy'
                 script {
@@ -41,6 +55,6 @@ pipeline {
                     }
                 }
             }
-        }
     }
+}
 }
