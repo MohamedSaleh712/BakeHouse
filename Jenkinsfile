@@ -1,4 +1,4 @@
-pipeline {
+pipeline{
     agent none
     // parameters {
     //     choice(name: 'ENV', choices: ['dev', 'test', 'prod',"release"])
@@ -38,7 +38,7 @@ pipeline {
                         return 'slave-release-label'
                 }
             }
-        }
+        
             steps {
                 echo 'deploy'
                 script {
@@ -55,6 +55,7 @@ pipeline {
                     }
                 }
             }
+        }
     }
 }
 
