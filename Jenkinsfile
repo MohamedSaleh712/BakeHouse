@@ -27,11 +27,11 @@ pipeline{
         }
         stage('deploy') {
             agent{
-                label {
-                    if (BRANCH_NAME == 'dev'){return 'slave-dev-label'}
-                    else if (BRANCH_NAME == 'test'){return 'slave-test-label'}
-                    else if (BRANCH_NAME == 'prod'){return 'slave-prod-label'}
-                    else{return 'slave-release-label'}
+                label { label 'slave-dev-label'
+                    // if (BRANCH_NAME == 'dev'){return 'slave-dev-label'}
+                    // else if (BRANCH_NAME == 'test'){return 'slave-test-label'}
+                    // else if (BRANCH_NAME == 'prod'){return 'slave-prod-label'}
+                    // else{return 'slave-release-label'}
 
 
 
