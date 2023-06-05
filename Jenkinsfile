@@ -1,14 +1,12 @@
 pipeline{
     agent none
-    // parameters {
-    //     choice(name: 'ENV', choices: ['dev', 'test', 'prod',"release"])
-    // }
+
     stages {
         stage('build') {
             agent { label 'slave-release-label' }
             steps {
                 echo 'build'
-                script{
+                script {
                     if (BRANCH_NAME == "release") {
                         withCredentials([usernamePassword(credentialsId: 'dockerhub-secret', usernameVariable: 'DOCKER_USERNAME', passwordVariable: 'DOCKER_PASSWORD')]) {
                             sh '''
@@ -18,36 +16,30 @@ pipeline{
                                 echo ${BUILD_NUMBER} > ../build.txt
                             '''
                         }
-                    }
-                    else {
-                        echo "user choosed ${BRANCH_NAME}"
+                    } else {
+                        echo "user chose ${BRANCH_NAME}"
                     }
                 }
             }
         }
         stage('deploy') {
-            agent{
-                label { label 'slave-dev-label'
-                    // if (BRANCH_NAME == 'dev'){return 'slave-dev-label'}
-                    // else if (BRANCH_NAME == 'test'){return 'slave-test-label'}
-                    // else if (BRANCH_NAME == 'prod'){return 'slave-prod-label'}
-                    // else{return 'slave-release-label'}
-
-
-
-                //     switch (BRANCH_NAME) {
-                //         case 'dev':
-                //             return 'slave-dev-label'
-                //         case 'test':
-                //             return 'slave-test-label'
-                //         case 'prod':
-                //             return 'slave-prod-label'
-                //         default:
-                //             return 'slave-release-label'
-                //     }
+            steps {
+                script {
+                    def env = ''
+                    if (BRANCH_NAME == 'dev') {
+                        env = 'slave-dev-label'
+                    } else if (BRANCH_NAME == 'test') {
+                        env = 'slave-test-label'
+                    } else if (BRANCH_NAME == 'prod') {
+                        env = 'slave-prod-label'
+                    } else {
+                        env = 'slave-release-label'
+                    }
+                }
+                agent {
+                    label env
                 }
             }
-        
             steps {
                 echo 'deploy'
                 script {
@@ -67,4 +59,3 @@ pipeline{
         }
     }
 }
-
