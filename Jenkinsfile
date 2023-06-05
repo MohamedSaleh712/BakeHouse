@@ -28,17 +28,24 @@ pipeline{
         stage('deploy') {
             agent{
                 label {
-                    switch (BRANCH_NAME) {
-                        case 'dev':
-                            return 'slave-dev-label'
-                        case 'test':
-                            return 'slave-test-label'
-                        case 'prod':
-                            return 'slave-prod-label'
-                        default:
-                            return 'slave-release-label'
-                    }
-                }
+                    if (BRANCH_NAME == 'dev'){return 'slave-dev-label'}
+                    else if (BRANCH_NAME == 'test'){return 'slave-test-label'}
+                    else if (BRANCH_NAME == 'prod'){return 'slave-prod-label'}
+                    else{return 'slave-release-label'}
+
+
+
+                //     switch (BRANCH_NAME) {
+                //         case 'dev':
+                //             return 'slave-dev-label'
+                //         case 'test':
+                //             return 'slave-test-label'
+                //         case 'prod':
+                //             return 'slave-prod-label'
+                //         default:
+                //             return 'slave-release-label'
+                //     }
+                // }
             }
         
             steps {
