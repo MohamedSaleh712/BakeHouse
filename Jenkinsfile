@@ -17,7 +17,7 @@ pipeline { //لازم يبدأ بـكلمة دي
                     sh '''
                         docker build -t 712199425/lab2ITI:v1 .
                         docker login -u ${DOCKER_USERNAME} -p {DOCKER_PASSWORD}
-                        docker push
+                        docker push 712199425/lab2ITI:v1
                         echo ${BUILD_NUMBER}
                     '''
                     }
