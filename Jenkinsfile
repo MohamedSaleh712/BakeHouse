@@ -16,8 +16,8 @@ pipeline { //لازم يبدأ بـكلمة دي
                     // without script scoopt it will crash 
                     withCredentials([usernamePassword(credentialsId:'dockerhub-secret',usernameVariable:'DOCKER_USERNAME',passwordVariable:'DOCKER_PASSWORD')]){
                         sh '''
-                            docker build -t 712199425/lab2iti:v${BUILD_NUMBER} .
                             docker login -u ${DOCKER_USERNAME} -p ${DOCKER_PASSWORD}
+                            docker build -t 712199425/lab2iti:v${BUILD_NUMBER} .
                             docker push 712199425/lab2iti:v${BUILD_NUMBER}
                             echo ${BUILD_NUMBER}
                         '''
