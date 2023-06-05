@@ -1,15 +1,22 @@
 pipeline {
-    agent { label 'iti-smart' }
+    agent none
     parameters {
-        choice(name: 'ENV', choices: ['dev', 'test', 'prod',"release"])
-    } 
+        choice(name: 'ENV', choices: ['dev', 'test', 'prod', 'release'])
+    }
     stages {
         stage('build') {
+            agent {
+                label 'slave-dev-label'
+            }
+            when {
+                expression {
+                    return params.ENV == 'release'
+                }
+            }
             steps {
-                echo 'build'
-                script{
-                    if (params.ENV == "release") {
-                        withCredentials([usernamePassword(credentialsId: 'dockerhub-secret', usernameVariable: 'DOCKER_USERNAME', passwordVariable: 'DOCKER_PASSWORD')]) {
+                script {
+                    if (params.ENV == 'release') {
+                         withCredentials([usernamePassword(credentialsId: 'dockerhub-secret', usernameVariable: 'DOCKER_USERNAME', passwordVariable: 'DOCKER_PASSWORD')]) {
                             sh '''
                                 docker login -u ${DOCKER_USERNAME} -p ${DOCKER_PASSWORD}
                                 docker build -t 712199425/lab2iti:v${BUILD_NUMBER} .
@@ -18,17 +25,32 @@ pipeline {
                             '''
                         }
                     }
-                    else {
-                        echo "user choosed ${params.ENV}"
-                    }
                 }
             }
         }
         stage('deploy') {
+            agent {
+                label {
+                    switch (params.ENV) {
+                        case 'dev':
+                            return 'slave-dev-label'
+                        case 'test':
+                            return 'slave-test-label'
+                        case 'prod':
+                            return 'slave-prod-label'
+                        default:
+                            return 'slave-release-label'
+                    }
+                }
+            }
+            when {
+                expression {
+                    return params.ENV != 'release'
+                }
+            }
             steps {
-                echo 'deploy'
                 script {
-                    if (params.ENV == "dev" || params.ENV == "test" || params.ENV == "prod") {
+                    if (params.ENV == 'dev' || params.ENV == 'test' || params.ENV == 'prod') {
                         withCredentials([file(credentialsId: 'iti-smart-kubeconfig', variable: 'KUBECONFIG_ITI')]) {
                             sh '''
                                 export BUILD_NUMBER=$(cat ../build.txt)
