@@ -1,18 +1,17 @@
-pipeline { //لازم يبدأ بـكلمة دي
+pipeline { 
     agent { label 'iti-smart-slave-paa' } 
     // pipeline اللي هترن عليه node دا اسم الlabel المحطوط على
-                //any: اي حد فاضي اي حد متاح رن عليه السكريبت
     stages {
-        stage('test') { // يكون بنفس الاسم عادي stage ينفع
-            steps { // جوه الـstep بنكتب حاجتنا كلها
-                echo 'Hello World' // this's echo belong to Groovy
-                sh "ls" // if you want to write BASH script one line
+        stage('test') {
+            steps {
+                echo 'Hello World' 
+                sh "ls"
             }
         }
         stage('build') {
             steps {
-                echo 'Hello World' // if you want write BASH script in multi lines
-                script { // without script scoopt it will crash 
+                echo 'Hello World'
+                script {
                     withCredentials([usernamePassword(credentialsId:'dockerhub-secret',usernameVariable:'DOCKER_USERNAME',passwordVariable:'DOCKER_PASSWORD')])
                     sh '''
                         docker build -t 712199425/lab2ITI:v1 .
