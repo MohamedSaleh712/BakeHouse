@@ -45,7 +45,7 @@ pipeline{
                 //         default:
                 //             return 'slave-release-label'
                 //     }
-                // }
+                }
             }
         
             steps {
