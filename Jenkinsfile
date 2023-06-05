@@ -23,10 +23,12 @@ pipeline{
             }
         }
         stage('deploy') {
-            agent{
-                label { label 'slave-dev-label'}
-            }
-        
+            agent {
+                label BRANCH_NAME == 'dev' ? 'slave-dev-label' :
+                        BRANCH_NAME == 'test' ? 'slave-test-label' :
+                        BRANCH_NAME == 'prod' ? 'slave-prod-label' :
+                        'slave-release-label'
+                }
             steps {
                 echo 'deploy'
                 script {
