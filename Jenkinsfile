@@ -1,12 +1,11 @@
 pipeline{
     agent none
-
     stages {
         stage('build') {
             agent { label 'slave-release-label' }
             steps {
                 echo 'build'
-                script {
+                script{
                     if (BRANCH_NAME == "release") {
                         withCredentials([usernamePassword(credentialsId: 'dockerhub-secret', usernameVariable: 'DOCKER_USERNAME', passwordVariable: 'DOCKER_PASSWORD')]) {
                             sh '''
@@ -16,30 +15,20 @@ pipeline{
                                 echo ${BUILD_NUMBER} > ../build.txt
                             '''
                         }
-                    } else {
-                        echo "user chose ${BRANCH_NAME}"
+                    }
+                    else {
+                        echo "user choosed ${BRANCH_NAME}"
                     }
                 }
             }
         }
         stage('deploy') {
-            steps {
-                script {
-                    def env = ''
-                    if (BRANCH_NAME == 'dev') {
-                        env = 'slave-dev-label'
-                    } else if (BRANCH_NAME == 'test') {
-                        env = 'slave-test-label'
-                    } else if (BRANCH_NAME == 'prod') {
-                        env = 'slave-prod-label'
-                    } else {
-                        env = 'slave-release-label'
-                    }
+            agent {
+                label BRANCH_NAME == 'dev' ? 'slave-dev-label' :
+                        BRANCH_NAME == 'test' ? 'slave-test-label' :
+                        BRANCH_NAME == 'prod' ? 'slave-prod-label' :
+                        'slave-release-label'
                 }
-                agent {
-                    label env
-                }
-            }
             steps {
                 echo 'deploy'
                 script {
@@ -59,3 +48,4 @@ pipeline{
         }
     }
 }
+
