@@ -12,21 +12,23 @@ pipeline {
             steps {
                 echo 'Hello World'
                 script {
-                    withCredentials([usernamePassword(credentialsId:'dockerhub-secret',usernameVariable:'DOCKER_USERNAME',passwordVariable:'DOCKER_PASSWORD')])
-                    sh '''
-                        docker build -t 712199425/lab2ITI:v1 .
-                        docker login -u ${DOCKER_USERNAME} -p ${DOCKER_PASSWORD}
-                        docker push 712199425/lab2ITI:v1
-                        echo ${BUILD_NUMBER}
-                    '''
+                    withCredentials([usernamePassword(credentialsId:'dockerhub-secret',usernameVariable:'DOCKER_USERNAME',passwordVariable:'DOCKER_PASSWORD')]){
+                        sh '''
+                            docker build -t 712199425/lab2ITI:v1 .
+                            docker login -u ${DOCKER_USERNAME} -p ${DOCKER_PASSWORD}
+                            docker push 712199425/lab2ITI:v1
+                            echo ${BUILD_NUMBER}
+                        '''
+                    } 
                     }
                 }
         }
         stage('deploy') {
             steps {
                 script {
-                    withCredentials([file(credentialsId:'iti-smart-kubeconfig', variable: 'KUBECONFIG_ITI')])
-                    sh 'kubectl apply -f Deployment --kubeconfig ${KUBECONFIG_ITI}'
+                    withCredentials([file(credentialsId:'iti-smart-kubeconfig', variable: 'KUBECONFIG_ITI')]){
+                        sh 'kubectl apply -f Deployment --kubeconfig ${KUBECONFIG_ITI}'
+                    }
                 }
             }
         }
